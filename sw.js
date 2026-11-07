@@ -1,5 +1,5 @@
 /* App shell cache: opens instantly and works offline (manual entry + ledger). Never touches /api/. */
-var CACHE = 'tipout-v1';
+var CACHE = 'tipout-v2';
 var SHELL = ['/', '/shim.js', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png', '/icons/icon.svg'];
 
 self.addEventListener('install', function (e) {

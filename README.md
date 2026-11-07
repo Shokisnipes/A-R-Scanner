@@ -9,10 +9,11 @@ Everything a person saves lives on their own phone (localStorage), so there are 
 1. Push this folder to a GitHub repo.
 2. Netlify > Add new site > Import from Git > pick the repo. No build command; publish directory `.` (netlify.toml already says so).
 3. Site configuration > Environment variables:
-   - `ANTHROPIC_API_KEY` = your key (console.anthropic.com). Required.
+   - Free: `GEMINI_API_KEY` = a key from aistudio.google.com > Get API key (no card needed). Optional `GEMINI_MODEL` (default `gemini-3.6-flash`; check ai.google.dev/gemini-api/docs/pricing for current free models). Google may use free-tier requests to improve its products, so photos of slips are seen by Google.
+   - Paid alternative: `ANTHROPIC_API_KEY` = a key from console.anthropic.com (needs credits). Used only if no Gemini key is set.
    - `APP_CODE` = a shared code you give coworkers. Recommended: without it anyone with the URL can spend your credits.
    - `MODEL` = optional override (default `claude-sonnet-5-5`).
-4. Deploy. In the Anthropic console set a monthly spend limit.
+4. Deploy. If you use the paid Anthropic key, set a monthly spend limit in its console.
 
 CLI alternative: `npm i -g netlify-cli && netlify deploy --prod` (set the env vars first with `netlify env:set`).
 

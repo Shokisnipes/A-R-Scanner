@@ -271,7 +271,7 @@ input.photo-filled { border-color: var(--area); }
     <div class="block">
       <div class="field">
         <label for="slip-name">Name on the slip</label>
-        <input type="text" id="slip-name" autocomplete="name">
+        <input type="text" id="slip-name" autocomplete="name" placeholder="Your name">
       </div>
       <div class="field" style="margin-top:12px">
         <label for="ar-number">My AR number</label>
@@ -310,8 +310,8 @@ input.photo-filled { border-color: var(--area); }
   ];
   var SCAN_PROMPT = 'cashout';
 
-  var state = { areas: clone(DEFAULT_AREAS), name: 'Petar Lazic', shifts: [], payouts: [], areaId: 'a1', netSign: 'owed', arNumber: '', ar: null };
-  var draft = { areas: clone(DEFAULT_AREAS), name: 'Petar Lazic', arNumber: '' };
+  var state = { areas: clone(DEFAULT_AREAS), name: '', shifts: [], payouts: [], areaId: 'a1', netSign: 'owed', arNumber: '', ar: null };
+  var draft = { areas: clone(DEFAULT_AREAS), name: '', arNumber: '' };
   var draftDirty = false;
   var store = { mode: 'pending' };
   var shiftsCol = null, payoutsCol = null, settingsRef = null;
