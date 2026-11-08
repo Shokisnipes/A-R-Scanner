@@ -39,3 +39,13 @@ When you change `index.html` or `shim.js`, bump `CACHE` in `sw.js` (`tipout-v2`,
 
 - Netlify's free tier times functions out at about 10 s. Photo reads usually take a few seconds.
 - Data is per device. Clearing site data or switching phones starts a fresh ledger.
+
+
+## Tip-out rates (private, server side)
+
+Rates are not in the app's code. Add this environment variable in Netlify, then redeploy:
+
+- `RATES` = `[{"name":"Upstairs","house":5,"bar":1.5},{"name":"Downstairs","house":4.5,"bar":2}]`
+- `APP_CODE` must be set too. Without it, `/api/rates` refuses to answer.
+
+Phones fetch the rates when the app opens online (after the access code is entered once) and keep a copy so the app works offline. Users can see their own rates in the Rates tab but cannot edit them. To change a rate, edit `RATES` in Netlify and redeploy.

@@ -56,7 +56,7 @@ h1 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; lett
 h1::after { content: ""; width: 0.42em; height: 0.42em; border-radius: 50%; background: var(--area); box-shadow: 0 0 14px var(--area); }
 h2 { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin: 0 0 10px; }
 
-.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+.tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
 .tab { font: inherit; font-weight: 600; font-size: 0.95rem; padding: 10px 6px; border: 0; border-radius: 12px; background: transparent; color: var(--muted); cursor: pointer; }
 .tab[aria-selected="true"] { background: var(--surface-2); color: var(--ink); box-shadow: inset 0 -2px 0 var(--area); }
 .tab .badge { font-family: var(--font-num); font-size: 0.75rem; margin-left: 5px; color: var(--area); }
@@ -195,6 +195,26 @@ input.photo-filled { border-color: var(--area); }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); padding: 11px 18px; border-radius: 99px; font-size: 0.9rem; max-width: calc(100% - 32px); z-index: 20; box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6); }
 @media (max-width: 380px) { .launch { grid-template-columns: 1fr; } .bubble { min-height: 112px; } .ans-row.main b { font-size: 2rem; } }
 @media (prefers-reduced-motion: no-preference) { .bubble, .btn { transition: transform 0.12s, box-shadow 0.2s; } .bubble:active, .btn:active { transform: scale(0.98); } }
+input[type="time"], input[type="tel"] { font: inherit; font-family: var(--font-num); font-size: 1.05rem; width: 100%; min-width: 0; padding: 12px 14px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; }
+input[type="tel"] { font-family: var(--font-body); font-size: 0.95rem; padding: 12px 10px; }
+.bar-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--bg); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 14px; }
+.bar-seg button { font: inherit; font-weight: 600; padding: 10px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); cursor: pointer; }
+.bar-seg button[aria-pressed="true"] { background: var(--surface-2); color: var(--ink); box-shadow: inset 0 -2px 0 var(--area); }
+.bar-rows { display: flex; flex-direction: column; gap: 14px; margin-bottom: 14px; }
+.bar-row { display: flex; flex-direction: column; gap: 10px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.bar-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.bar-top { display: flex; gap: 8px; }
+.bar-x { flex: none; width: 46px; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 12px; font-size: 1.4rem; line-height: 1; cursor: pointer; }
+.bar-times { display: grid; grid-template-columns: 1fr 1fr 52px; gap: 8px; align-items: end; }
+.bar-times input[type="time"] { padding: 12px 8px; font-size: 0.95rem; }
+.bar-hrs { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; padding-bottom: 12px; }
+.bar-hrs b { font-family: var(--font-num); font-weight: 500; font-size: 1.15rem; }
+.bar-note { font-size: 0.8rem; color: var(--muted); padding: 0 0 14px; }
+.bar-send { display: flex; flex-direction: column; gap: 14px; }
+.bar-actions { display: flex; justify-content: space-between; gap: 10px; }
+.scan-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 1rem; cursor: pointer; }
+.scan-row input { width: 22px; height: 22px; accent-color: var(--area, #7C83FF); flex: none; }
+.scan-note { margin: 10px 0 0; font-size: 0.8rem; line-height: 1.45; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -206,6 +226,7 @@ input.photo-filled { border-color: var(--area); }
     <button class="tab" role="tab" id="tab-tonight" aria-selected="true" aria-controls="panel-tonight">Tonight</button>
     <button class="tab" role="tab" id="tab-ledger" aria-selected="false" aria-controls="panel-ledger">Ledger<span class="badge" id="pending-badge" hidden></span></button>
     <button class="tab" role="tab" id="tab-rules" aria-selected="false" aria-controls="panel-rules">Rates</button>
+    <button class="tab" role="tab" id="tab-bar" aria-selected="false" aria-controls="panel-bar">Bar</button>
   </div>
 
   <!-- TONIGHT -->
@@ -268,6 +289,8 @@ input.photo-filled { border-color: var(--area); }
   </section>
 
   <!-- RATES -->
+  <section class="panel" id="panel-bar" role="tabpanel" aria-labelledby="tab-bar" hidden><div id="bar-root" style="display:contents"></div></section>
+
   <section class="panel" id="panel-rules" role="tabpanel" aria-labelledby="tab-rules" hidden>
     <div class="block">
       <div class="field">
@@ -281,9 +304,10 @@ input.photo-filled { border-color: var(--area); }
     </div>
     <div class="block">
       <div id="areas-edit"></div>
-      <div class="actions" style="margin-top:14px">
-        <button class="btn small ghost" id="add-area" type="button">Add area</button>
-      </div>
+    </div>
+    <div class="block scan-set" id="scan-set" hidden>
+      <label class="scan-row" for="scan-switch"><span>Photo scanning</span><input type="checkbox" id="scan-switch" role="switch"></label>
+      <p class="scan-note" id="scan-note"></p>
     </div>
     <button class="btn" id="save-rules" type="button" disabled>Save</button>
   </section>
@@ -298,11 +322,8 @@ input.photo-filled { border-color: var(--area); }
   'use strict';
 
   var LS_KEY = 'tipout.v3';
-  var DEFAULT_AREAS = [
-    { id: 'a1', name: 'Upstairs', house: 5, bar: 1.5 },
-    { id: 'a2', name: 'Downstairs', house: 4.5, bar: 2 },
-    { id: 'a3', name: 'Manager', house: 1.5, bar: 2 }
-  ];
+  // No rates are built into the app. They are fetched from the server (/api/rates) after the access code is entered.
+  var DEFAULT_AREAS = [];
   var AREA_COLORS = [
     { c: '#FFB454', ci: '#2A1A06' },
     { c: '#8AA4FF', ci: '#0F1633' },
@@ -317,7 +338,22 @@ input.photo-filled { border-color: var(--area); }
   var store = { mode: 'pending' };
   var shiftsCol = null, payoutsCol = null, settingsRef = null;
   var AR_PROMPT = 'ar:%AR%';
-  var sampleFn = null;
+  var sampleFn = null, sampleSrc = null;
+  function scanAllowed() { return !(window.TIPOUT_SCAN && !window.TIPOUT_SCAN.on()); }
+  // Photo scanning switch: off means no photo is read or sent anywhere; the app is typed entry only.
+  function applyScan(userChanged) {
+    sampleFn = sampleSrc && scanAllowed() ? sampleSrc : null;
+    var set = $('#scan-set');
+    if (window.TIPOUT_SCAN && sampleSrc) {
+      set.hidden = false; $('#scan-switch').checked = scanAllowed();
+      $('#scan-note').textContent = scanAllowed()
+        ? 'Each photo is sent once to be read, then discarded. This app never saves it. Only the numbers stay, on this phone.'
+        : 'Off. No photo is taken or sent anywhere. Type the numbers instead.';
+    }
+    if (!sampleFn) { forceManual = true; setScan(scanAllowed() ? 'Photo reading is not available here. Pick your area and type the numbers.' : 'Photo scanning is off. Pick your area and type the numbers.', ''); }
+    else if (userChanged) { forceManual = false; setScan('', ''); }
+    renderReceipt(); paintAr();
+  }
   var forceManual = false, manualOpen = false;
   var expandedId = null;
   var ui = { sel: {}, received: '' };
@@ -477,7 +513,7 @@ input.photo-filled { border-color: var(--area); }
       if (warn) forceManual = true;
       renderReceipt();
     }).catch(function (e) {
-      scanFailed(scanMsg[e && e.code] || 'Could not read it. Try again or type the numbers.');
+      scanFailed((scanMsg[e && e.code] || 'Could not read it. Try again or type the numbers.') + (e && e.detail ? ' (' + e.detail + ')' : ''));
     }).then(function () { setBusy(false); });
   }
 
@@ -545,17 +581,16 @@ input.photo-filled { border-color: var(--area); }
       if (calc().due > 0) { setArScan('', ''); arDone(amt); }
       else setArScan('Not needed tonight. Nothing owed.', '');
     }).catch(function (e) {
-      setArScan((scanMsg[e && e.code] || 'Could not read the sheet.') + RETAKE, 'err');
+      setArScan((scanMsg[e && e.code] || 'Could not read the sheet.') + (e && e.detail ? ' (' + e.detail + ')' : '') + RETAKE, 'err');
     }).then(function () { setBusy(false); });
   }
 
   /* ---------- storage ---------- */
-  function persistLocal() { try { localStorage.setItem(LS_KEY, JSON.stringify({ areas: state.areas, name: state.name, arNumber: state.arNumber, shifts: state.shifts, payouts: state.payouts })); } catch (e) {} }
+  function persistLocal() { try { localStorage.setItem(LS_KEY, JSON.stringify({ areas: [], name: state.name, arNumber: state.arNumber, shifts: state.shifts, payouts: state.payouts })); } catch (e) {} }
   function loadLocal() {
     try {
       var d = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
       if (d) {
-        if (Array.isArray(d.areas) && d.areas.length) state.areas = d.areas;
         if (typeof d.name === 'string') state.name = d.name;
         if (typeof d.arNumber === 'string') state.arNumber = d.arNumber;
         if (Array.isArray(d.shifts)) state.shifts = d.shifts;
@@ -596,9 +631,9 @@ input.photo-filled { border-color: var(--area); }
 
   /* ---------- tabs ---------- */
   function showTab(name) {
-    ['tonight', 'ledger', 'rules'].forEach(function (n) { $('#panel-' + n).hidden = n !== name; $('#tab-' + n).setAttribute('aria-selected', n === name); });
+    ['tonight', 'ledger', 'rules', 'bar'].forEach(function (n) { $('#panel-' + n).hidden = n !== name; $('#tab-' + n).setAttribute('aria-selected', n === name); });
   }
-  ['tonight', 'ledger', 'rules'].forEach(function (n) { $('#tab-' + n).addEventListener('click', function () { showTab(n); }); });
+  ['tonight', 'ledger', 'rules', 'bar'].forEach(function (n) { $('#tab-' + n).addEventListener('click', function () { showTab(n); }); });
 
   /* ---------- ledger ---------- */
   function sum(arr, f) { return arr.reduce(function (a, x) { return a + f(x); }, 0); }
@@ -715,33 +750,16 @@ input.photo-filled { border-color: var(--area); }
   function renderRates() {
     $('#slip-name').value = draft.name || '';
     $('#ar-number').value = draft.arNumber || '';
-    $('#areas-edit').innerHTML = draft.areas.length ? draft.areas.map(function (a, i) {
-      return '<div class="area">' +
-        '<div class="field"><label for="an-' + i + '">Name</label><input type="text" id="an-' + i + '" data-i="' + i + '" data-k="name" value="' + esc(a.name) + '"></div>' +
-        '<div class="field"><label for="ah-' + i + '">House %</label><input type="number" id="ah-' + i + '" data-i="' + i + '" data-k="house" inputmode="decimal" step="0.1" min="0" value="' + a.house + '"></div>' +
-        '<div class="field"><label for="ab-' + i + '">Bar %</label><input type="number" id="ab-' + i + '" data-i="' + i + '" data-k="bar" inputmode="decimal" step="0.1" min="0" value="' + a.bar + '"></div>' +
-        '<button class="btn small danger rm" type="button" data-rm="' + i + '">Remove</button></div>';
-    }).join('') : '';
+    $('#areas-edit').innerHTML = state.areas.length
+      ? '<div class="ans-cap">Set by the app admin</div>' + state.areas.map(function (a) {
+          return '<div class="ans-row"><span>' + esc(a.name) + '<small>house \u00b7 bar</small></span><b>' + pct(a.house) + ' \u00b7 ' + pct(a.bar) + '</b></div>';
+        }).join('')
+      : '<p class="scan-note">Rates not loaded yet. Open the app online and enter the access code.</p>';
     $('#save-rules').disabled = !draftDirty;
   }
-  $('#areas-edit').addEventListener('input', function (e) {
-    var t = e.target, i = t.getAttribute('data-i'); if (i == null) return;
-    var k = t.getAttribute('data-k');
-    draft.areas[i][k] = k === 'name' ? t.value : (parseFloat(t.value) || 0);
-    draftDirty = true; $('#save-rules').disabled = false;
-  });
-  $('#areas-edit').addEventListener('click', function (e) {
-    var b = e.target.closest('[data-rm]'); if (!b) return;
-    draft.areas.splice(+b.getAttribute('data-rm'), 1); draftDirty = true; renderRates();
-  });
   $('#slip-name').addEventListener('input', function (e) { draft.name = e.target.value; draftDirty = true; $('#save-rules').disabled = false; });
   $('#ar-number').addEventListener('input', function (e) { draft.arNumber = e.target.value.replace(/\D/g, ''); draftDirty = true; $('#save-rules').disabled = false; });
-  $('#add-area').addEventListener('click', function () {
-    draft.areas.push({ id: newId('a'), name: '', house: 0, bar: 0 }); draftDirty = true; renderRates();
-    var last = $('#an-' + (draft.areas.length - 1)); if (last) last.focus();
-  });
   $('#save-rules').addEventListener('click', function () {
-    state.areas = draft.areas.filter(function (a) { return String(a.name).trim(); }).map(function (a) { return { id: a.id, name: String(a.name).trim(), house: a.house, bar: a.bar }; });
     state.name = String(draft.name || '').trim();
     var newAr = String(draft.arNumber || '').trim();
     if (newAr !== state.arNumber) state.ar = null;
@@ -759,6 +777,22 @@ input.photo-filled { border-color: var(--area); }
     if (!draftDirty) { draft = { areas: clone(state.areas), name: state.name, arNumber: state.arNumber }; renderRates(); }
     renderAreas(); renderReceipt(); paintAr();
   }
+  // Rates come from the server. Cached copy first so the app is instant and works offline, then refreshed.
+  function useRates(areas) {
+    state.areas = areas.map(function (x) { return { id: x.id, name: x.name, house: x.house, bar: x.bar }; });
+    draft.areas = clone(state.areas);
+    renderAreas(); renderRates(); renderReceipt(); paintAr();
+  }
+  function loadRates() {
+    if (!window.TIPOUT_RATES) return;
+    var c = window.TIPOUT_RATES.cached(); if (c) useRates(c);
+    window.TIPOUT_RATES.get().then(function (r) {
+      if (r.areas) { useRates(r.areas); return; }
+      forceManual = true;
+      setScan(r.why === 'code' ? 'Wrong access code. Reopen the app to try again.' : r.why === 'server' ? 'Rates are not set up on the server yet.' : 'No connection. Rates load the first time you are online.', 'err');
+      renderRates();
+    });
+  }
   function ready() { $('#save-shift').disabled = false; }
   function use(n) { return (window.claude && window.claude.use) ? window.claude.use(n) : Promise.resolve(null); }
 
@@ -771,9 +805,9 @@ input.photo-filled { border-color: var(--area); }
     } catch (e) {}
 
     if (sm) {
-      try { var lim = await sm.limits(); if (lim && lim.images) sampleFn = sm; } catch (e) {}
+      try { var lim = await sm.limits(); if (lim && (lim.images || !scanAllowed())) sampleSrc = sm; } catch (e) {}
     }
-    if (!sampleFn) { forceManual = true; setScan('Photo reading is not available here. Pick Upstairs or Downstairs and type the numbers.', ''); }
+    applyScan(false);
     renderAreas(); renderReceipt(); paintAr();
 
     if (db && uid) {
@@ -799,8 +833,10 @@ input.photo-filled { border-color: var(--area); }
     loadLocal(); try { state.arNumber = localStorage.getItem('tipout.arnum') || state.arNumber || ''; } catch (e) {} sortAll(); draft = { areas: clone(state.areas), name: state.name, arNumber: state.arNumber };
     renderAreas(); renderRates(); renderReceipt(); renderLedger();
     ready(); setSync('Saved on this device only.');
+    loadRates();
   }
 
+  $('#scan-switch').addEventListener('change', function (e) { if (window.TIPOUT_SCAN) window.TIPOUT_SCAN.set(e.target.checked); applyScan(true); });
   $('#date').value = shiftDate();
   try { state.arNumber = localStorage.getItem('tipout.arnum') || ''; draft.arNumber = state.arNumber; } catch (e) {}
   try { var lastArea = localStorage.getItem('tipout.area'); if (lastArea) state.areaId = lastArea; } catch (e) {}
@@ -808,6 +844,8 @@ input.photo-filled { border-color: var(--area); }
   init();
 })();
 </script>
+<script>window.BAR_PROMPT_KIND = 'bar';</script>
+<script src="/bar.js"></script>
 <script>
 if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
 </script>

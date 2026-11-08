@@ -1,6 +1,6 @@
 /* App shell cache: opens instantly and works offline (manual entry + ledger). Never touches /api/. */
-var CACHE = 'tipout-v3';
-var SHELL = ['/', '/shim.js', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png', '/icons/icon.svg'];
+var CACHE = 'tipout-v12';
+var SHELL = ['/', '/shim.js', '/bar.js', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png', '/icons/icon.svg'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(SHELL); }).then(function () { return self.skipWaiting(); }));
